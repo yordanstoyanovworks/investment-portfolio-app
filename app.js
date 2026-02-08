@@ -1,22 +1,9 @@
+import { supabase } from './supabaseClient.js'
+
 const USD_TO_EUR = 0.8462;
 const EUR_TO_USD = 1 / USD_TO_EUR;
 
-let holdings = [
-    { id: 1, name: "Vanguard S&P 500 UCITS ETF", ticker: "VUAA", country: "USA", invested: 2502.99, current: 2712.05, tradeCcy: "EUR" },
-    { id: 2, name: "iShares Nasdaq 100 UCITS ETF", ticker: "NQSE", country: "USA", invested: 1638.99, current: 1926.83, tradeCcy: "EUR" },
-    { id: 3, name: "Berkshire Hathaway Class B", ticker: "BRK.B", country: "USA", invested: 1692.81, current: 1844.66, tradeCcy: "USD" },
-    { id: 4, name: "Alphabet Inc Class C", ticker: "GOOG", country: "USA", invested: 758.00, current: 1639.32, tradeCcy: "USD" },
-    { id: 5, name: "Amazon.com Inc", ticker: "AMZN", country: "USA", invested: 212.34, current: 215.31, tradeCcy: "USD" },
-    { id: 6, name: "NVIDIA Corp", ticker: "NVDA", country: "USA", invested: 916.45, current: 3295.55, tradeCcy: "USD" },
-    { id: 7, name: "Apple Inc", ticker: "AAPL", country: "USA", invested: 1979.04, current: 2602.34, tradeCcy: "USD" },
-    { id: 8, name: "Taiwan Semiconductor", ticker: "TSM", country: "Taiwan", invested: 437.46, current: 788.44, tradeCcy: "USD" },
-    { id: 9, name: "Broadcom Inc", ticker: "AVGO", country: "USA", invested: 248.51, current: 384.69, tradeCcy: "USD" },
-    { id: 10, name: "iRobot Corp (bankrupt)", ticker: "IRBTQ", country: "USA", invested: 152.44, current: 0.63, tradeCcy: "USD" },
-    { id: 11, name: "Gold", ticker: "XAU", country: "Global", invested: 185.22, current: 293.43, tradeCcy: "EUR" },
-    { id: 12, name: "Cash (Revolut)", ticker: "CASH", country: "—", invested: 2177.11, current: 2177.11, tradeCcy: "EUR" }
-];
-
-let nextId = 13;
+let holdings = [];
 let editingId = null;
 let deletingId = null;
 
@@ -31,6 +18,98 @@ const ASSET_COLORS = ['#3b82f6','#8b5cf6','#f59e0b','#10b981','#64748b'];
 
 function fmt(n) {
     return Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// ═══════════════════════════════
+//  SUPABASE DATA FUNCTIONS
+// ═══════════════════════════════
+async function loadHoldings() {
+    try {
+        const { data, error } = await supabase
+            .from('holdings')
+            .select('*')
+            .order('id', { ascending: true });
+
+        if (error) throw error;
+
+        // Map database fields to app format (trade_ccy -> tradeCcy)
+        holdings = data.map(h => ({
+            id: h.id,
+            name: h.name,
+            ticker: h.ticker,
+            country: h.country,
+            tradeCcy: h.trade_ccy,
+            invested: parseFloat(h.invested),
+            current: parseFloat(h.current)
+        }));
+
+        render();
+    } catch (error) {
+        console.error('Error loading holdings:', error);
+        alert('Failed to load portfolio data. Please refresh the page.');
+    }
+}
+
+async function createHolding(holding) {
+    try {
+        const { data, error } = await supabase
+            .from('holdings')
+            .insert([{
+                name: holding.name,
+                ticker: holding.ticker,
+                country: holding.country,
+                trade_ccy: holding.tradeCcy,
+                invested: holding.invested,
+                current: holding.current
+            }])
+            .select();
+
+        if (error) throw error;
+
+        await loadHoldings();
+    } catch (error) {
+        console.error('Error creating holding:', error);
+        alert('Failed to add holding. Please try again.');
+    }
+}
+
+async function updateHolding(id, holding) {
+    try {
+        const { error } = await supabase
+            .from('holdings')
+            .update({
+                name: holding.name,
+                ticker: holding.ticker,
+                country: holding.country,
+                trade_ccy: holding.tradeCcy,
+                invested: holding.invested,
+                current: holding.current
+            })
+            .eq('id', id);
+
+        if (error) throw error;
+
+        await loadHoldings();
+    } catch (error) {
+        console.error('Error updating holding:', error);
+        alert('Failed to update holding. Please try again.');
+    }
+}
+
+async function deleteHolding(id) {
+    try {
+        const { error } = await supabase
+            .from('holdings')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
+
+        await loadHoldings();
+    } catch (error) {
+        console.error('Error deleting holding:', error);
+        alert('Failed to delete holding. Please try again.');
+    }
 }
 
 // ═══════════════════════════════
@@ -248,7 +327,7 @@ function closeFormModal() {
     editingId = null;
 }
 
-function saveHolding() {
+async function saveHolding() {
     const name = document.getElementById('f_name').value.trim();
     const ticker = document.getElementById('f_ticker').value.trim().toUpperCase();
     const country = document.getElementById('f_country').value.trim();
@@ -259,14 +338,12 @@ function saveHolding() {
     if (!name || !ticker) return;
 
     if (editingId !== null) {
-        const h = holdings.find(x => x.id === editingId);
-        if (h) { h.name = name; h.ticker = ticker; h.country = country; h.tradeCcy = tradeCcy; h.invested = invested; h.current = current; }
+        await updateHolding(editingId, { name, ticker, country, tradeCcy, invested, current });
     } else {
-        holdings.push({ id: nextId++, name, ticker, country, tradeCcy, invested, current });
+        await createHolding({ name, ticker, country, tradeCcy, invested, current });
     }
 
     closeFormModal();
-    render();
 }
 
 function openDeleteModal(id) {
@@ -283,10 +360,11 @@ function closeDeleteModal() {
     deletingId = null;
 }
 
-function confirmDelete() {
-    if (deletingId !== null) holdings = holdings.filter(h => h.id !== deletingId);
+async function confirmDelete() {
+    if (deletingId !== null) {
+        await deleteHolding(deletingId);
+    }
     closeDeleteModal();
-    render();
 }
 
 // ═══════════════════════════════
@@ -318,7 +396,17 @@ document.querySelectorAll('#formModal input, #formModal select').forEach(el => {
 document.getElementById('formModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeFormModal(); });
 document.getElementById('deleteModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeDeleteModal(); });
 
+// Make functions globally accessible
+window.openAddModal = openAddModal;
+window.openEditModal = openEditModal;
+window.closeFormModal = closeFormModal;
+window.saveHolding = saveHolding;
+window.openDeleteModal = openDeleteModal;
+window.closeDeleteModal = closeDeleteModal;
+window.confirmDelete = confirmDelete;
+window.toggleMenu = toggleMenu;
+
 // ═══════════════════════════════
 //  INIT
 // ═══════════════════════════════
-render();
+loadHoldings();
