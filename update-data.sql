@@ -1,15 +1,7 @@
-CREATE TABLE IF NOT EXISTS holdings (
-  id BIGSERIAL PRIMARY KEY,
-  name TEXT NOT NULL,
-  ticker TEXT NOT NULL,
-  country TEXT,
-  trade_ccy TEXT DEFAULT 'EUR',
-  invested DECIMAL(12,2) DEFAULT 0,
-  current DECIMAL(12,2) DEFAULT 0,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+-- Clear existing data
+DELETE FROM holdings;
 
+-- Insert new dummy data
 INSERT INTO holdings (id, name, ticker, country, invested, current, trade_ccy) VALUES
 (1, 'iShares Core S&P 500 ETF', 'IVV', 'USA', 3200.00, 3850.00, 'USD'),
 (2, 'Vanguard FTSE Developed Markets ETF', 'VEA', 'Global', 1850.00, 1920.00, 'EUR'),
@@ -24,9 +16,5 @@ INSERT INTO holdings (id, name, ticker, country, invested, current, trade_ccy) V
 (11, 'Silver', 'XAG', 'Global', 420.00, 510.00, 'EUR'),
 (12, 'Cash (Savings)', 'CASH', '—', 1500.00, 1500.00, 'EUR');
 
+-- Reset sequence
 SELECT setval('holdings_id_seq', 13, false);
-
-ALTER TABLE holdings ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Enable all access for all users" ON holdings
-FOR ALL USING (true) WITH CHECK (true);

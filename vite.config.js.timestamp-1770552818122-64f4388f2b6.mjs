@@ -1,0 +1,17 @@
+// vite.config.js
+import { defineConfig } from "file:///E:/Dropbox/11-Boris%20and%20Models/Claude%20Code%20Projects/Portoflio%20App_02/node_modules/vite/dist/node/index.js";
+var vite_config_default = defineConfig({
+  root: ".",
+  build: {
+    outDir: "dist",
+    rollupOptions: {
+      input: {
+        main: "./index.html"
+      }
+    }
+  }
+});
+export {
+  vite_config_default as default
+};
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsidml0ZS5jb25maWcuanMiXSwKICAic291cmNlc0NvbnRlbnQiOiBbImNvbnN0IF9fdml0ZV9pbmplY3RlZF9vcmlnaW5hbF9kaXJuYW1lID0gXCJFOlxcXFxEcm9wYm94XFxcXDExLUJvcmlzIGFuZCBNb2RlbHNcXFxcQ2xhdWRlIENvZGUgUHJvamVjdHNcXFxcUG9ydG9mbGlvIEFwcF8wMlwiO2NvbnN0IF9fdml0ZV9pbmplY3RlZF9vcmlnaW5hbF9maWxlbmFtZSA9IFwiRTpcXFxcRHJvcGJveFxcXFwxMS1Cb3JpcyBhbmQgTW9kZWxzXFxcXENsYXVkZSBDb2RlIFByb2plY3RzXFxcXFBvcnRvZmxpbyBBcHBfMDJcXFxcdml0ZS5jb25maWcuanNcIjtjb25zdCBfX3ZpdGVfaW5qZWN0ZWRfb3JpZ2luYWxfaW1wb3J0X21ldGFfdXJsID0gXCJmaWxlOi8vL0U6L0Ryb3Bib3gvMTEtQm9yaXMlMjBhbmQlMjBNb2RlbHMvQ2xhdWRlJTIwQ29kZSUyMFByb2plY3RzL1BvcnRvZmxpbyUyMEFwcF8wMi92aXRlLmNvbmZpZy5qc1wiO2ltcG9ydCB7IGRlZmluZUNvbmZpZyB9IGZyb20gJ3ZpdGUnXG5cbmV4cG9ydCBkZWZhdWx0IGRlZmluZUNvbmZpZyh7XG4gIHJvb3Q6ICcuJyxcbiAgYnVpbGQ6IHtcbiAgICBvdXREaXI6ICdkaXN0JyxcbiAgICByb2xsdXBPcHRpb25zOiB7XG4gICAgICBpbnB1dDoge1xuICAgICAgICBtYWluOiAnLi9pbmRleC5odG1sJ1xuICAgICAgfVxuICAgIH1cbiAgfVxufSlcbiJdLAogICJtYXBwaW5ncyI6ICI7QUFBa1osU0FBUyxvQkFBb0I7QUFFL2EsSUFBTyxzQkFBUSxhQUFhO0FBQUEsRUFDMUIsTUFBTTtBQUFBLEVBQ04sT0FBTztBQUFBLElBQ0wsUUFBUTtBQUFBLElBQ1IsZUFBZTtBQUFBLE1BQ2IsT0FBTztBQUFBLFFBQ0wsTUFBTTtBQUFBLE1BQ1I7QUFBQSxJQUNGO0FBQUEsRUFDRjtBQUNGLENBQUM7IiwKICAibmFtZXMiOiBbXQp9Cg==

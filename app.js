@@ -231,13 +231,13 @@ function renderAllocChart() {
 }
 
 function renderAssetChart() {
-    const etfTickers = ['VUAA','NQSE'];
-    const techTickers = ['NVDA','AAPL','GOOG','AMZN','TSM','AVGO'];
+    const etfTickers = ['IVV','VEA'];
+    const techTickers = ['MSFT','TSLA','META','NFLX'];
     const types = {
         'ETFs': holdings.filter(h => etfTickers.includes(h.ticker)).reduce((s,h) => s + h.current, 0),
         'Tech Stocks': holdings.filter(h => techTickers.includes(h.ticker)).reduce((s,h) => s + h.current, 0),
-        'Other Stocks': holdings.filter(h => !etfTickers.includes(h.ticker) && !techTickers.includes(h.ticker) && h.ticker !== 'XAU' && h.ticker !== 'CASH').reduce((s,h) => s + h.current, 0),
-        'Commodities': holdings.filter(h => h.ticker === 'XAU').reduce((s,h) => s + h.current, 0),
+        'Other Stocks': holdings.filter(h => !etfTickers.includes(h.ticker) && !techTickers.includes(h.ticker) && h.ticker !== 'XAG' && h.ticker !== 'CASH').reduce((s,h) => s + h.current, 0),
+        'Commodities': holdings.filter(h => h.ticker === 'XAG').reduce((s,h) => s + h.current, 0),
         'Cash': holdings.filter(h => h.ticker === 'CASH').reduce((s,h) => s + h.current, 0)
     };
     const total = Object.values(types).reduce((s,v) => s + v, 0);
