@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Portfolio Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Portfolio Overview</h1>
+            <p class="subtitle">Last updated: <span id="lastUpdated"></span></p>
+        </header>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Total Value</div>
+                <div class="metric-value" id="totalValue"></div>
+                <div class="metric-change positive" id="totalGain"></div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Total Invested</div>
+                <div class="metric-value" id="totalInvested"></div>
+                <div class="metric-change"><span>Including cash reserves</span></div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Unrealized Gain</div>
+                <div class="metric-value" id="unrealizedGain"></div>
+                <div class="metric-change" id="returnPercent"></div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Cash Position</div>
+                <div class="metric-value" id="cashValue"></div>
+                <div class="metric-change" id="cashPercent"></div>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-header"><div class="chart-title">Portfolio Allocation</div></div>
+                <canvas id="allocationChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <div class="chart-header"><div class="chart-title">Asset Type Distribution</div></div>
+                <canvas id="assetTypeChart"></canvas>
+            </div>
+            <div class="chart-card full-width">
+                <div class="chart-header"><div class="chart-title">Invested vs Current Value</div></div>
+                <canvas id="performanceChart"></canvas>
+            </div>
+        </div>
+
+        <div class="holdings-table">
+            <div class="table-header">
+                <div class="chart-title">All Holdings</div>
+                <button class="btn-add" onclick="openAddModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Add Holding
+                </button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Company / ETF</th>
+                        <th>Ticker</th>
+                        <th>Country</th>
+                        <th>Ccy</th>
+                        <th>Invested</th>
+                        <th>Current Value</th>
+                        <th>Value (EUR)</th>
+                        <th>Gain / Loss</th>
+                        <th>Return %</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="holdingsTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add / Edit Modal -->
+    <div class="modal-overlay" id="formModal">
+        <div class="modal">
+            <h2 id="formModalTitle">Add Holding</h2>
+            <div class="form-grid">
+                <div class="form-group full">
+                    <label>Company / ETF Name</label>
+                    <input type="text" id="f_name" placeholder="e.g. Apple Inc">
+                </div>
+                <div class="form-group">
+                    <label>Ticker</label>
+                    <input type="text" id="f_ticker" placeholder="e.g. AAPL">
+                </div>
+                <div class="form-group">
+                    <label>Country</label>
+                    <input type="text" id="f_country" placeholder="e.g. USA">
+                </div>
+                <div class="form-group">
+                    <label>Trade Currency</label>
+                    <select id="f_tradeCcy">
+                        <option value="EUR">EUR</option>
+                        <option value="USD">USD</option>
+                        <option value="GBP">GBP</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Invested (€)</label>
+                    <input type="number" id="f_invested" step="0.01" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label>Current Value (€)</label>
+                    <input type="number" id="f_current" step="0.01" placeholder="0.00">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeFormModal()">Cancel</button>
+                <button class="btn btn-save" onclick="saveHolding()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirm Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal" style="width: 400px;">
+            <h2>Delete Holding</h2>
+            <p class="confirm-body" id="deleteMessage"></p>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn btn-delete" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
